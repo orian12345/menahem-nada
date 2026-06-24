@@ -34,7 +34,7 @@ if ('IntersectionObserver' in window) {
   animatedItems.forEach(item => item.classList.add('in-view'));
 }
 
-// Contact form submission (Netlify Forms via fetch)
+// Contact form submission - saved to Netlify Forms dashboard, and emailed directly via FormSubmit
 const form = document.getElementById('contact-form');
 const note = document.getElementById('form-note');
 
@@ -42,11 +42,19 @@ form.addEventListener('submit', (e) => {
   e.preventDefault();
   const data = new FormData(form);
 
-  fetch('/', {
+  const netlifySubmit = fetch('/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams(data).toString()
-  })
+  }).catch(() => {});
+
+  const emailSubmit = fetch('https://formsubmit.co/ajax/men.nada56@gmail.com', {
+    method: 'POST',
+    headers: { 'Accept': 'application/json' },
+    body: data
+  }).catch(() => {});
+
+  Promise.all([netlifySubmit, emailSubmit])
     .then(() => {
       note.textContent = 'הפנייה נשלחה בהצלחה! נחזור אליך בקרוב.';
       form.reset();
